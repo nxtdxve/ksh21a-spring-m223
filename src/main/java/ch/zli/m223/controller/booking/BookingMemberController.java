@@ -1,6 +1,6 @@
-package ch.zli.m223.controller.ticketing;
+package ch.zli.m223.controller.booking;
 
-import ch.zli.m223.controller.ticketing.dto.BookingRequestDto;
+import ch.zli.m223.controller.booking.dto.BookingRequestDto;
 import ch.zli.m223.service.user.BookingService;
 import ch.zli.m223.service.user.exception.UnauthorizedAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/member/bookings")
-public class BookingController {
+public class BookingMemberController {
 
     @Autowired
     private BookingService bookingService;

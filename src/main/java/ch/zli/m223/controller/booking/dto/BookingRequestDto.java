@@ -1,4 +1,4 @@
-package ch.zli.m223.controller.ticketing.dto;
+package ch.zli.m223.controller.booking.dto;
 
 import ch.zli.m223.model.BookingType;
 

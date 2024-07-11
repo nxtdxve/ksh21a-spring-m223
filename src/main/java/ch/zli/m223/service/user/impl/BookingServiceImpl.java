@@ -1,6 +1,6 @@
 package ch.zli.m223.service.user.impl;
 
-import ch.zli.m223.controller.ticketing.dto.BookingRequestDto;
+import ch.zli.m223.controller.booking.dto.BookingRequestDto;
 import ch.zli.m223.model.impl.AppUserImpl;
 import ch.zli.m223.model.impl.BookingImpl;
 import ch.zli.m223.repository.BookingRepository;
@@ -62,6 +62,27 @@ public class BookingServiceImpl implements BookingService {
             throw new UnauthorizedAccessException();
         }
 
+        bookingRepository.delete(booking);
+    }
+
+    @Override
+    public BookingImpl getBookingById(Long id) {
+        return bookingRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Booking not found"));
+    }
+
+    @Override
+    public void updateBookingStatus(Long id, String status) {
+        BookingImpl booking = bookingRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Booking not found"));
+        booking.setStatus(status);
+        bookingRepository.save(booking);
+    }
+
+    @Override
+    public void deleteBooking(Long id) {
+        BookingImpl booking = bookingRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Booking not found"));
         bookingRepository.delete(booking);
     }
 }
