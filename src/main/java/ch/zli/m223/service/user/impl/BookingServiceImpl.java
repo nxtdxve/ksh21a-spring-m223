@@ -12,6 +12,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -84,5 +90,24 @@ public class BookingServiceImpl implements BookingService {
         BookingImpl booking = bookingRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("Booking not found"));
         bookingRepository.delete(booking);
+    }
+
+    @Override
+    public Map<String, Long> getWeeklyReport(LocalDate date) {
+        LocalDate startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        List<BookingImpl> bookings = bookingRepository.findAllByDateBetween(startOfWeek, endOfWeek);
+
+        long confirmed = bookings.stream().filter(booking -> "Confirmed".equals(booking.getStatus())).count();
+        long rejected = bookings.stream().filter(booking -> "Rejected".equals(booking.getStatus())).count();
+        long pending = bookings.stream().filter(booking -> "Pending".equals(booking.getStatus())).count();
+
+        Map<String, Long> report = new HashMap<>();
+        report.put("Confirmed", confirmed);
+        report.put("Rejected", rejected);
+        report.put("Pending", pending);
+
+        return report;
     }
 }

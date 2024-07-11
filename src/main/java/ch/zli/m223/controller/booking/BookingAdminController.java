@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -57,6 +58,16 @@ public class BookingAdminController {
         try {
             bookingService.createBooking(bookingRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Booking request created", "status", "Pending"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<?> getWeeklyReport(@RequestParam("date") String date) {
+        try {
+            Map<String, Long> report = bookingService.getWeeklyReport(LocalDate.parse(date));
+            return ResponseEntity.status(HttpStatus.OK).body(report);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
