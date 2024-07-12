@@ -21,3 +21,7 @@ Sie finden die passenden Postman-Scripts im './src/test/postman' Verzeichnis.
 - [Login](./src/test/postman/Login.postman_collection.json)
 - [Admin](./src/test/postman/Admin.postman_collection.json)
 - [Member](./src/test/postman/Member.postman_collection.json)
+
+## OpenAPI Doku
+Sie finden die OpenAPI Doku im [./doc](./doc/openApiDoc.yaml) Verzeichnis.
+- [OpenAPI Doku](./doc/openApiDoc.yaml)

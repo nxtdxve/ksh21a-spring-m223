@@ -1,0 +1,312 @@
+openapi: 3.0.1
+info:
+  title: Coworking Space API
+  description: API für die Verwaltung von Buchungen im Coworking Space.
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+tags:
+- name: Member
+  description: Endpunkte für Mitglieder
+- name: Admin
+  description: Endpunkte für Administratoren
+paths:
+  /api/v1/member/bookings:
+    post:
+      tags:
+      - Member
+      summary: Anfragen von halben oder ganzen Tagen im Coworking Space
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+        required: true
+      responses:
+        "201":
+          description: Erfolgreiche Anfrage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        "400":
+          description: Fehlerhafte Eingaben
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - memberAuth: []
+  /api/v1/member/bookings/{id}:
+    get:
+      tags:
+      - Member
+      summary: Überprüfen des Status einer Buchung
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingStatusResponse'
+        "404":
+          description: Buchung nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - memberAuth: []
+    delete:
+      tags:
+      - Member
+      summary: Stornieren einer zukünftigen Buchung
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Stornierung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        "404":
+          description: Buchung nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - memberAuth: []
+  /api/v1/admin/bookings/{id}:
+    get:
+      tags:
+      - Admin
+      summary: Abrufen einer Buchungsanfrage
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBookingResponse'
+        "404":
+          description: Buchung nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - adminAuth: []
+    put:
+      tags:
+      - Admin
+      summary: Bearbeiten einer Buchungsanfrage
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminBookingUpdateRequest'
+        required: true
+      responses:
+        "200":
+          description: Erfolgreiche Bearbeitung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        "400":
+          description: Fehlerhafte Eingaben
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Buchung nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - adminAuth: []
+    delete:
+      tags:
+      - Admin
+      summary: Löschen einer Buchungsanfrage
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Löschung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        "404":
+          description: Buchung nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - adminAuth: []
+  /api/v1/admin/bookings:
+    post:
+      tags:
+      - Admin
+      summary: Erstellen einer neuen Buchungsanfrage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminBookingRequest'
+        required: true
+      responses:
+        "201":
+          description: Erfolgreiche Erstellung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        "400":
+          description: Fehlerhafte Eingaben
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - adminAuth: []
+components:
+  schemas:
+    BookingRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        bookingType:
+          type: string
+          example: FULLDAY
+          enum:
+          - MORNING
+          - AFTERNOON
+          - FULLDAY
+    BookingResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Booking request submitted
+        status:
+          type: string
+          example: Pending
+    BookingStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: Confirmed
+    AdminBookingResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          example: 42
+        date:
+          type: string
+          format: date
+        bookingType:
+          type: string
+          example: FULLDAY
+          enum:
+          - MORNING
+          - AFTERNOON
+          - FULLDAY
+        status:
+          type: string
+          example: Pending
+    AdminBookingUpdateRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          example: Confirmed
+          enum:
+          - Confirmed
+          - Rejected
+    AdminBookingRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 42
+        date:
+          type: string
+          format: date
+        bookingType:
+          type: string
+          example: FULLDAY
+          enum:
+          - MORNING
+          - AFTERNOON
+          - FULLDAY
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Action successful
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Description of the error
+  securitySchemes:
+    memberAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    adminAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
